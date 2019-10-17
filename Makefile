@@ -1,7 +1,7 @@
 CC=gcc
 FLAGS=-Wall -pedantic -std=c99 -Werror -pthread
 SRC=tp1.c
-EXE=sudoku
+EXE=sudoku.out
 
 .PHONY: clean default
 
