@@ -6,6 +6,8 @@
 
 // nombre maximal de caractere quon peut lire
 #define MAX_INPUT_COUNT 1000
+#define MAX_NOMBRE_SUDOKU 100
+#define MAX_CHAR_SUDOKU 100
 
 /**
  * Obtenir un pointeur de stream vers le fichier que nous voulons ouvrir
@@ -29,93 +31,71 @@ FILE *get_fichier (const char chemin[])
  */
 char *get_input_de_fichier (char str[], FILE *fichier)
 {
-    char ligne[20];
-    while (fgets(ligne, sizeof ligne, fichier))
-        strcat(str, ligne);
+    char c;
+    int i = 0;
+    while ((c = fgetc(fichier)) != EOF) {
+        if (c != ' ')    
+           str[i++] = c; 
+    }
 
     return str;
 }
 
 /**
- * Extrait un sudoku d'une chaine de caracteres peut importe si la chaine est
- * un sudoku valide ou non. Afin de synchroniser les coordonnes de la matrice,
- * on simule la chaine "str" comme une matrice en utilisant la formule pour 
- * indice = i*dimension + j, ou i et j sont les coordonnees de la matrice.
+ * Extrait la sous-chaine entre [0, fin[ de la chaine passee en parametre.
  *
- * @param hauteur   Hauteur de la matrice
- * @param longueur  Longueur de la matrice
- * @param sudoku    La matrice qui represente le sudoku
- * @param str       la chaine de caractere d'ou on va extraire le sudoku
+ * @param fin   Indice final de la chaine. N'est pas inclu
+ * @param source    La chaine dont nous voulons extraire la sous-chaine
+ * @param substr    Pointeur vers la sous-chaine
  *
+ * @return  Un pointeur vers la sous-chaine. Retourne NULL si la chaine principale est vide
+ *          ou NULL
  */
-void extraire_sudoku (size_t dimension, char sudoku[dimension][dimension], char str[]) 
+char *sub_str (int fin, char source[], char substr[]) 
 {
-    int indice_str = 0;
+    if (strlen(source) == 0 || !source)
+        return NULL;
 
-    for (int i = 0; i < (dimension / 2); i++) {
-        for (int j = 0; j < dimension; j++) {
+    for (int i = 0; i < fin; i++) {
+         substr[i] = source[i];
+    } 
 
-            indice_str = i*dimension + j;
-            if (!isspace(str[indice_str]))
-                sudoku[i][j] = str[indice_str];
-
-        }
-    }
-}
-
-/**
- * Extrait une sous-chaine de "str" a partir du debut de "str" 
- * jusqu'a la position "fin". Cette fonction modifie le pointeur str.
- * Afin de preserver la chaine de caractere, on suggere de copier str
- * dans une autre chaine avec strcpy
- *
- * @param str   Chaine original
- * @param fin   Derniere position de la sous-chaine
- *
- * @return  La sous-chaine correspondante. Si "fin" est plus grand
- *          que la longueur de "str", alors on retourne NULL
- */
-char *sub_str (const char *str, char* substr, int fin)
-{
-    if (fin > strlen(str)) 
-       return NULL;
-
-    for (int i = 0; i < fin; i++)
-        substr[i] = str[i];
-    substr[fin] = 0;
-
-    str = str + fin;
-
+    substr[fin] = '\0'; 
+    
     return substr;
 }
 
 /**
- * Extraire tout les sudokus d'une chaine de caractere.
- * Un sudoku est delimite par deux caracteres de retours consecutifs.
- * Les sudokus seront stockes dans une liste ayant comme longueur le nombre
- * de sudoku dans la chaine passee en parametre
+ * Extrait tous les sudokus d'une chaine de caracteres. Chaque sudoku doit etre
+ * separe par un saut de ligne ('\n'). Etant donne que chaque rangee d'un sudoku
+ * est separee par un saut de ligne, chaque sudoku est separe par deux saut de ligne
+ * consecutifs.
  *
- * @param str   Chaine d'ou on veut extraire les sudokus
- * @param liste Le tableau dans lequel les sudokus seront stockes
+ * On accepte un nombre maximal de sudoku. On suppose que chaque sudoku a un maximum de 100 
+ * caracteres.
+ *
+ * @param nb_max_sudoku     Nombre maximal de sudoku acceptes
+ * @param tous_sudoku       Liste de chaine de caracteres qui contiendra tous les sudokus
+ * @param str               Chaine de caracteres d'ou nous voulons extraire les sudokus
+ *
+ * @return  Le nombre de sudokus lus
  */
-void extraire_all_sudoku(char str[])
+int extraire_tous_sudokus (size_t nb_max_sudoku, char tous_sudoku[nb_max_sudoku][100], char *str)
 {
     const char *delim = "\n\n";
-    const char *pos_of_delim = strstr(str, delim);
-    char substr[pos_of_delim - str];
-    sub_str(str, substr, pos_of_delim - str);
-    
-    
-}
+    int fin = 0;
+    char *pos_delim;
+    char sudoku[100];
+    int nbSudoku = 0;
+    while (*str != '\0') {
+       pos_delim = strstr(str, delim);
+       fin = pos_delim - str;
+       sub_str(fin, str, sudoku);
+       strcpy(tous_sudoku[nbSudoku++], sudoku);
+       str = pos_delim + 2;
+    } 
 
-void print_sudoku(size_t size, char sudoku[size][size])
-{
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            printf("%c", sudoku[i][j]);
-        }
-        printf("\n");
-    }
+    return nbSudoku;
 }
 
 int main (int argc, char *argv[])
@@ -135,19 +115,12 @@ int main (int argc, char *argv[])
 
     }
 
-    // Lecture du fichie contenant les sudokus
+    // Lecture du fichier contenant les sudokus
     char entree_fichier[MAX_INPUT_COUNT] = {0};
     get_input_de_fichier(entree_fichier, fichier);
     fclose(fichier);
 
-    extraire_all_sudoku(entree_fichier);
-    printf("Original after sub_str:\n%s\n", entree_fichier);
-
-    /* char sudoku[DIMENSION_SUDOKU][DIMENSION_SUDOKU] = {0}; */
-    /* extraire_sudoku(DIMENSION_SUDOKU, sudoku, entree_fichier); */
-
-    /* /1* printf("%s", entree_fichier); *1/ */
-    /* print_sudoku(DIMENSION_SUDOKU, sudoku); */
-
+    char tous_sudoku[MAX_NOMBRE_SUDOKU][MAX_CHAR_SUDOKU];
+    int n =extraire_tous_sudokus(MAX_NOMBRE_SUDOKU, tous_sudoku, entree_fichier);
     return 0;
 }
