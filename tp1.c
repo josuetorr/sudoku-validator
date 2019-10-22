@@ -166,5 +166,7 @@ int main (int argc, char *argv[])
     char tous_sudoku[MAX_NOMBRE_SUDOKU][MAX_CHAR_SUDOKU];
     int nbSudoku = extraire_tous_sudokus(MAX_CHAR_SUDOKU, tous_sudoku, entree_fichier);
 
+    // TIME TO START USING THREADS TO VALIDE EACH SUDOKU
+
     return 0;
 }
