@@ -7,13 +7,16 @@
 /* comme ca on peut facilement savoir si le nombre de caracteres dans */
 /* ce sudoku sont valide ou non. Si on trouve un caractere dans la 10ieme */
 /* rangee ou dans la 10ieme columne, alors on sait que le sudoku est invalide. */
-#define MAX_NUM_ROW 10
-#define MAX_NUM_COL 10
+#define MAX_NUM_ROWS 10
+#define MAX_NUM_COLS 10
+
+#define NUM_ROWS 9
+#define NUM_COLS 9
 
 typedef struct Sudoku 
 {
-   char matrix[MAX_NUM_ROW][MAX_NUM_COL]; 
-   int current_empty_row;
+   char matrix[MAX_NUM_ROWS][MAX_NUM_COLS]; 
+   int current_num_rows;
 } Sudoku;
 
 /**
@@ -32,12 +35,12 @@ int sudoku_insert_row(Sudoku* s, const char *row);
 /**
  * Retourne une copie de la chaine de caractere a la index-ieme columne
  */
-const char *sudoku_get_col(Sudoku *s, int index);
+char *sudoku_get_col(Sudoku *s, int index, char *colcpy);
 
 /**
  * Retourne une copie de la chaine de caractere a la index-ieme rangee
  */
-const char *sudoku_get_row(Sudoku *s, int index);
+char *sudoku_get_row(Sudoku *s, int index, char *rowcpy);
 
 /**
  * Retourne une copie (chaine de caractere) du index-ieme 3x3. Index croit de la gauche vers la droite
