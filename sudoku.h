@@ -13,6 +13,10 @@
 #define NUM_ROWS 9
 #define NUM_COLS 9
 
+#define SKD_ERROR_SIZE 1
+#define SKD_ERROR_CHAR 2
+#define SKD_ERROR_DOUBLE 3
+#define SKD_SUCCESS 0
 typedef struct Sudoku 
 {
    char matrix[MAX_NUM_ROWS][MAX_NUM_COLS]; 
@@ -43,14 +47,36 @@ char *sudoku_get_col(Sudoku *s, int index, char *colcpy);
 char *sudoku_get_row(Sudoku *s, int index, char *rowcpy);
 
 /**
- * Retourne une copie (chaine de caractere) du index-ieme 3x3. Index croit de la gauche vers la droite
- * et du haut vers le bas.
+ * Retourne une copie du (row, col) 3x3. Row et Col sont les coordornnees de 
+ * la premiere position de ce 3x3
  */
-const char *sudoku_get_3x3(Sudoku *s, int index);
+char *sudoku_get_square(Sudoku *s, int row, int col, char *squarecpy);
 
 /**
  * Retourne 1 si le sudoku a une taille de 9x9. Autrement retourne 0
  */
-int sudoku_valid_size(Sudoku *s);
+int sudoku_is_valid_size(Sudoku *s);
+
+/**
+ * Verifier si la rangee selectionnee est valide ou non.
+ * Retourne l'indice qui n'est pas valide si on en trouve un, sinon retourne -1
+ */
+int sudoku_is_valid_row(Sudoku *s, int row_index);
+
+/**
+ * Verifier si la colomne selectionnee est valide
+ * Retourne l'indice qui n'est pas valide si on en trouve un, sinon retourne -1
+ */
+int sudoku_is_valid_col(Sudoku *s, int col_index);
+
+/**
+ * Verifier si un 3x3 est valide. Retourne 1 si ou, 0 sinon
+ */
+int sudoku_is_valid_square(Sudoku *s, int row, int col);
+
+/**
+ * Verifie si le caractere est valid
+ */
+int sudoku_is_valid_char(char c);
 
 #endif

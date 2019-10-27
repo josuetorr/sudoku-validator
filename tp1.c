@@ -20,6 +20,12 @@
 
 #define MAX_NUM_SUDOKUS 10
 
+typedef struct Params
+{
+    Sudoku *s;
+    int index_s;
+} Params;
+
 
 /**
  * Enlever tout les espaces blancs a gauche de la chaine
@@ -150,6 +156,30 @@ int read_all_sudokus(char *str, Sudoku *list_sudoku)
     return num_sudokus;
 }
 
+void *validate_sudoku(void *arg)
+{
+    Params *params = (Params*)arg;
+    Sudoku *s = params -> s;
+    int index_s = params -> index_s;
+    if (!sudoku_is_valid_size(s)) {
+        fprintf(stderr, "La taille de la grille du Sudoku (%d) devrait etre 9x9\n", index_s + 1);
+        free(params);
+        pthread_exit(0);
+    }
+
+    int col = 0;
+    for (int row = 0; row < NUM_ROWS; row++) {
+       if ((col = sudoku_is_valid_row(s, row)) != -1) {
+        fprintf(stderr, "La case %d, %d du Sudoku (%d) contient un caractere non-entier ou un caractere special non admis\n", row, col, index_s + 1);
+        free(params);
+        pthread_exit(0);
+       }
+    }
+
+    free(params);
+    pthread_exit(0);
+}
+
 int main(int argc, char *argv[])
 {
     // On doit fournir un nom de fichier en argument au programme
@@ -178,7 +208,22 @@ int main(int argc, char *argv[])
     fclose(file);
 
     Sudoku list_sudoku[MAX_NUM_SUDOKUS];
-    int num_sudokus = read_all_sudokus(file_content, list_sudoku);
+    int num_sudoku = read_all_sudokus(file_content, list_sudoku);
+
+    pthread_t threads[num_sudoku];
+
+    // Lauch threads
+    for (int i = 0; i < num_sudoku; i++) {
+        Params *params = (Params*) malloc(sizeof(Params*));
+        params -> s = &list_sudoku[i];
+        params -> index_s = i;
+        pthread_create(&threads[i], NULL, validate_sudoku, params);
+    }
+
+    // Wait on threads
+    for (int i = 0; i < num_sudoku; i++) {
+        pthread_join(threads[i], NULL);
+    }
 
     return 0;
 }
