@@ -1,11 +1,11 @@
------------------------------------------------------------------------------
-| Auteur: Josue Torres
-| Courriel: josue.dtorres@gmail.com
-| Code Permanent: TORJ16029201
-| Version: 26 oct 2019
-| Professeur: Ammar Hammad
-| Objectif: Valider un ou plusieurs sudoku(s) en utilisant plusieurs threads
------------------------------------------------------------------------------
++----------------------------------------------------------------------------+
+| Auteur: Josue Torres                                                       |
+| Courriel: josue.dtorres@gmail.com                                          |
+| Code Permanent: TORJ16029201                                               |
+| Version: 26 oct 2019                                                       |
+| Professeur: Ammar Hammad                                                   |
+| Objectif: Valider un ou plusieurs sudoku(s) en utilisant plusieurs threads |
++----------------------------------------------------------------------------+
 
 Ce programme n'est pas complété. Il manque la validation des doublons dans une rangée, colomne et 3x3.
 
